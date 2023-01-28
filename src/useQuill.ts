@@ -1,14 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { defaultToolbarOptions } from "./const";
 
-import Quill from "quill";
+import Quill, { QuillOptionsStatic } from "quill";
 
-// import { ImageResizeExtended } from "./CustomImageResize";
-// Quill.register("modules/imageResize", ImageResizeExtended);
+import { ImageResizeExtended } from "./CustomImageResize";
+Quill.register("modules/imageResize", ImageResizeExtended);
 
-const defaultConfig = {
-    theme: "snow",
+const defaultOptions: QuillOptionsStatic = {
     modules: {
         toolbar: defaultToolbarOptions,
         imageResize: {
@@ -19,58 +18,96 @@ const defaultConfig = {
             ],
         },
     },
+    theme: "snow",
+    // formats: [
+    //     "header",
+    //     "font",
+    //     "size",
+    //     "bold",
+    //     "italic",
+    //     "underline",
+    //     "align",
+    //     "strike",
+    //     "script",
+    //     "blockquote",
+    //     "background",
+    //     "list",
+    //     "bullet",
+    //     "indent",
+    //     "link",
+    //     "image",
+    //     "color",
+    //     "code-block",
+    // ],
+};
+
+export type Modules = {
+    [key: string]: any;
 };
 
 type Props = {
-    config?: any;
-    $target?: HTMLElement | string | null;
-    bounds?: HTMLElement;
-    theme?: string;
-    placeHolder?: string;
-    // domRef?: React.RefObject<HTMLDivElement>;
+    onTextChange?: any;
+    onImageAdded?: any;
+
+    containerRef?: React.RefObject<any>;
+    boundsRef?: React.RefObject<any>;
+    toolBarRef?: React.RefObject<any>;
+    options?: QuillOptionsStatic;
 };
 
 export const useQuill = (props: Props = {}) => {
-    const domRef = useRef<HTMLDivElement>(null);
-    const boundRef = useRef<HTMLDivElement>(null);
-
-    const [quill, setQuill] = useState<Quill>();
+    const quillRef = useRef<Quill>();
+    // const containerRef = useRef<HTMLDivElement>(null);
 
     const {
-        config = defaultConfig,
-        bounds,
-        theme = "snow",
-        placeHolder,
+        options = defaultOptions,
+        containerRef,
+        boundsRef,
+        toolBarRef,
     } = props;
 
     useEffect(() => {
         if (!document) return;
-        const configToUse = {
-            ...config,
-            bounds: boundRef.current,
-            theme,
-            placeHolder,
+        // if (containerRef === null) return;
+        // if (quillRef.current !== undefined) return;
+
+        const optionsToUse = {
+            ...options,
+            bounds: boundsRef?.current,
+            modules: {
+                ...options.modules,
+                // toolbar: "#toolbar",
+                // toolbar: {
+                //     container: "#toolbar",
+                // },
+                ...(toolBarRef?.current !== undefined && {
+                    toolbar: toolBarRef.current,
+                }),
+            },
         };
 
-        const quill: Quill = new Quill(
-            domRef.current ?? "#editor",
-            configToUse
+        const quillCreated: Quill = new Quill(
+            containerRef?.current ?? ".editor",
+            optionsToUse
         );
-        setQuill(() => quill);
-        const dom = domRef.current;
+        quillRef.current = quillCreated;
+        console.log("optionsToUse:: ", {
+            optionsToUse,
+            container: containerRef?.current,
+            quill: quillRef,
+        });
+        // const dom = editorRef.current;
 
         return () => {
-            quill.disable();
-
-            const previous = dom?.previousElementSibling;
-            if (!previous?.classList.contains("ql-toolbar")) return;
-            previous.replaceWith("");
+            quillRef?.current?.disable();
+            // const previous = containerRef?.current.previousElementSibling;
+            // if (!previous?.classList.contains("ql-toolbar")) return;
+            // previous.replaceWith("");
         };
-    }, [bounds, config, placeHolder, theme]);
+    }, [options]);
 
     return {
-        quill,
-        domRef,
-        boundRef,
+        quillRef,
+        // containerRef,
     };
 };
