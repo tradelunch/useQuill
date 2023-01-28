@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import Quill, { QuillOptionsStatic } from "quill";
 
 import { defaultToolbarOptions } from "./const";
-
-import Quill, { QuillOptionsStatic } from "quill";
 
 import { ImageResizeExtended } from "./CustomImageResize";
 Quill.register("modules/imageResize", ImageResizeExtended);
@@ -14,7 +13,7 @@ const defaultOptions: QuillOptionsStatic = {
             modules: [
                 "Resize",
                 "DisplaySize",
-                // 'Toolbar'
+                // "Toolbar"
             ],
         },
     },
@@ -86,6 +85,10 @@ export const useQuill = (props: Props = {}) => {
             },
         };
 
+        // if (toolBarRef?.current) {
+        //     toolBarRef.current.query
+        // }
+
         const quillCreated: Quill = new Quill(
             containerRef?.current ?? ".editor",
             optionsToUse
@@ -96,7 +99,6 @@ export const useQuill = (props: Props = {}) => {
             container: containerRef?.current,
             quill: quillRef,
         });
-        // const dom = editorRef.current;
 
         return () => {
             quillRef?.current?.disable();

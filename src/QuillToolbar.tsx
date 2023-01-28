@@ -1,4 +1,4 @@
-import React, { ForwardedRef, forwardRef, useRef } from "react";
+import React, { ForwardedRef, forwardRef, useEffect, useRef } from "react";
 
 type Props = {};
 
@@ -33,8 +33,18 @@ export const QuillToolbar = forwardRef(function (
                 </select> */}
             </span>
             <span className="ql-formats">
-                <button className="ql-bold" />
-                <button className="ql-italic" />
+                <button
+                    className="ql-bold"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Bold"
+                />
+                <button
+                    className="ql-italic"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Add italic text <cmd+i>"
+                />
                 <button className="ql-underline" />
                 <button className="ql-strike" />
             </span>
